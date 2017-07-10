@@ -1,4 +1,4 @@
-OfxDynamixel 
+OF_Tennis 
 =====================================
 Visualize tennis results with openframeworks.
 
