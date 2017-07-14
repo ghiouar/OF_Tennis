@@ -23,8 +23,13 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 
 		ofTrueTypeFont font;
-		ofxPanel dynamixel_move;
-		ofxLabel nom;
-		ofxLabel model_number;
+		ofxPanel infocsv;
+		ofxLabel champ1;
+		ofxLabel champ2;
+		ofxLabel champ3;
+		ofxLabel champ4;
+		ofxLabel champ5;
+		ofxLabel champ6;
+		ofxLabel champ7;
 		
 };

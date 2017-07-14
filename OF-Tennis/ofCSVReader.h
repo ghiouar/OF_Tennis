@@ -11,10 +11,10 @@ class ofCSVReader
 public:
 	ofCSVReader(string filePath, char delimiter = ',');
 	~ofCSVReader();
-	vector<vector<string>> getData();
+	vector<vector<string>> * getData();
 
 private:
-	vector<vector<string>> data;
+	vector<vector<string>> * data;
 	string delimiter, filePath;
 	ofBuffer buffer;
 	void readData();
