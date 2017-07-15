@@ -9,12 +9,14 @@ ofTournament::ofTournament(string id , string name, string surface, string level
 	this->level = level;
 	this->surface = surface;
 	this->date = date;
+	this->matchs = new vector<ofMatch>();
 
 }
 
 
 ofTournament::~ofTournament()
 {
+	this->matchs = new vector<ofMatch>();
 }
 
 string ofTournament::getID()

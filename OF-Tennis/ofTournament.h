@@ -19,7 +19,7 @@ public:
 	string getDate();
 
 	vector<ofMatch> * getMatchs();
-	void addMatch(ofMatch match);
+	void addMatch(ofMatch  match);
 
 	void setID(string id);
 	void setName(string name);

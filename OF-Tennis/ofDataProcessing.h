@@ -18,6 +18,10 @@ private:
 	vector<vector<string>> * data;
 	vector<ofTournament> * tournament;
 	void transform();
+	ofMatch getMatch(vector<string> * info);
+
+	void playerInfo_firstPart(vector<string> * info, ofPlayer * player, int indiceStart, int indiceEnd);
+	void playerInfo_secondPart(vector<string> * info, ofPlayer * player, int indiceStart, int indiceEnd);
 
 };
 
