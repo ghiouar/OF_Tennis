@@ -7,6 +7,7 @@ ofDataProcessing::ofDataProcessing(vector<vector<string>>  * data)
 {
 	this->data = data;
 	this->tournament = new vector<ofTournament>();
+	tournament_name = new vector<string>();
 
 	transform();
 
@@ -67,6 +68,8 @@ void ofDataProcessing::transform()
 			tourn.setLevel((*data)[i][3]);
 			tourn.setDate((*data)[i][4]);
 			name_prev = name;
+			tournament_name->push_back(name);
+			//std::cout << name << std::endl;
 			tourn.addMatch(getMatch(&(*data)[i]));
 			
 		}
@@ -92,6 +95,8 @@ ofMatch  ofDataProcessing::getMatch(vector<string> * info)
 			match_num		score		best_of		round	minutes
 		*/
 		match.setId((*info)[6]);
+		/*string score = (*info)[27];
+		std::cout << (*info)[27] << std::endl;*/
 		match.setScore((*info)[27]);
 		match.setBest_of((*info)[28]);
 		match.setRound((*info)[29]);

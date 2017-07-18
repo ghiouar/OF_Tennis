@@ -2,17 +2,21 @@
 #include "ofApp.h"
 
 /* Test class */
-#include "ofCSVReader.h"
 #include <conio.h>
 
 //========================================================================
 int main( ){
-	ofSetupOpenGL(1024,768,OF_WINDOW);			// <-------- setup the GL context
-
+	ofSetupOpenGL(1000, 700, OF_WINDOW);			// <-------- setup the GL context
+	ofBackground(255);
+	//ofSetColor(0);
+	//
+	
 	// this kicks off the running of my app
 	// can be OF_WINDOW or OF_FULLSCREEN
 	// pass in width and height too:
-	ofRunApp(new ofApp());
+	ofApp * app = new ofApp(); 
+	app->sizeWindow(750);
+	ofRunApp(app);
 
 	
 }

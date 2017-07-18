@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 #include "ofMain.h"
-#include "ofTournament.h"
+#include "Model/ofTournament.h"
 
 class ofDataProcessing
 {
@@ -17,6 +17,7 @@ public:
 private:
 	vector<vector<string>> * data;
 	vector<ofTournament> * tournament;
+	vector<string> * tournament_name;
 	void transform();
 	ofMatch getMatch(vector<string> * info);
 
