@@ -47,6 +47,11 @@ vector<ofTournament> * ofDataProcessing::getTournamentAll()
 	return tournament;
 }
 
+vector<string>* ofDataProcessing::getTournamentsNames()
+{
+	return this->tournament_name;
+}
+
 void ofDataProcessing::transform()
 {
 	ofTournament tourn = ofTournament();

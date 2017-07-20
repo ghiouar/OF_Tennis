@@ -12,6 +12,7 @@ public:
 	~ofDataProcessing();
 	ofTournament * getTournament(std::string name);
 	vector<ofTournament> * getTournamentAll();
+	vector<string> * getTournamentsNames();
 	
 
 private:

@@ -1,240 +1,294 @@
 #include "ofApp.h"
-#include "CSV/ofCSVReader.h"
-#include "CSV/ofDataProcessing.h"
+#include "ofxUI.h"
+#include "CSV\ofCSVReader.h"
+#include "CSV\ofDataProcessing.h"
 
 
-//--------------------------------------------------------------
-void ofApp::setup(){
-	//this->sizeWindow(200);
+void ofApp::setup()
+{
+	font = new ofTrueTypeFont();
+	font->load("ofxbraitsch/fonts/Verdana.ttf",9);
+	x = 200;
+	y = 150;
+	p = 25;
+
+
+	/*component = new ofxDatGuiLabel("Tournament");
+	component->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+	component->setPosition(350, 10);
+	component->setWidth(300, 0);
+	components.push_back(component);*/
+
+
+	ofCSVReader csvData("atp2016.csv", ',');
+	vector<vector<string>> * data = csvData.getData();
+	ofDataProcessing processedData(data);
+	names = processedData.getTournamentsNames();
+
+	header();
+	choiceOfPlayers();
+	playersInfos();
+	matchsInfos();
+
+
+}
+
+void ofApp::update()
+{
+
+	for (int i = 0; i < components.size(); i++) components[i]->update();
+	view->draw();
+	left->draw(202, 202);
+	img->draw(475, 125);
+	right->draw(602, 202);
+}
+
+void ofApp::draw()
+{
+	for (int i = 0; i<components.size(); i++) components[i]->draw();
+	view->draw();
+	left->draw(188, 202);
+	img->draw(475, 125);
+	right->draw(616, 202);
+}
+
+/*
+event listeners
+*/
+
+void ofApp::onButtonEvent(ofxDatGuiButtonEvent e)
+{
+	cout << "onButtonEvent: " << e.target->getLabel() << endl;
+}
+
+void ofApp::onToggleEvent(ofxDatGuiToggleEvent e)
+{
+	cout << "onToggleEvent: " << e.target->getLabel() << "::" << e.target->getChecked() << endl;
+}
+
+void ofApp::onSliderEvent(ofxDatGuiSliderEvent e)
+{
+	cout << "onSliderEvent: " << e.value << "::" << e.scale << endl;
+}
+
+void ofApp::onDropdownEvent(ofxDatGuiDropdownEvent e)
+{
+	cout << "onDropdownEvent: " << e.child << endl;
+}
+
+void ofApp::onMatrixEvent(ofxDatGuiMatrixEvent e)
+{
+	cout << "onMatrixEvent: " << e.child << "::" << e.enabled << endl;
+}
+
+void ofApp::onColorPickerEvent(ofxDatGuiColorPickerEvent e)
+{
+	cout << "onColorPickerEvent: " << e.color << endl;
+}
+
+void ofApp::on2dPadEvent(ofxDatGui2dPadEvent e)
+{
+	cout << "on2dPadEvent: " << e.x << "::" << e.y << endl;
+}
+
+void ofApp::onTextInputEvent(ofxDatGuiTextInputEvent e)
+{
+	cout << "onButtonEvent: " << e.text << endl;
+}
+
+
+
+void ofApp::onScrollViewEvent(ofxDatGuiScrollViewEvent e)
+{
+	cout << e.target->getLabel() << " [index " << e.index << "] selected in [" << e.parent->getName() << "]" << endl;
+}
+
+void ofApp::header()
+{
+	/*view = new ofxDatGuiScrollView("Tounament", 3);
+	view->setWidth(300);
+	view->setPosition(350, 37);
+	view->onScrollViewEvent(this, &ofApp::onScrollViewEvent);
+	for (int i = 0; i<names.size(); i++) view->add(ofToString(names[i]));*/
+
+	view = new ofxUISuperCanvas("");
+	view->addSpacer();
+	view_list = view->addDropDownList("Tournament", *names);
+	view_list->setAutoClose(true);
+	view_list->setAllowMultiple(false);
+	view_list->setShowCurrentSelected(true);
+	view->setHeight(48);
+	view->setPosition(400, 10);
+	view->setColorBack(ofxUIColor::darkOliveGreen);
+	view->draw();
+	ofAddListener(view->newGUIEvent, this, &ofApp::headerEvent);
+}
+
+void ofApp::headerEvent(ofxUIEventArgs & e)
+{
+	string name = e.getName();
+	std::cout << name << std::endl;
+	if (name.compare("Doha") == 0) {
+		playersInfosHide();
+	} else {
+		playersInfos();
+		matchsInfos();
+	}
+}
+
+void ofApp::choiceOfPlayers()
+{
+	Players_left = new ofxUISuperCanvas("");
+	Players_left->addSpacer();
+	player_left_list = Players_left->addDropDownList("Player 1", *names);
+	player_left_list->setAutoClose(true);
+	player_left_list->setAllowMultiple(false);
+	Players_left->setHeight(48);
+	Players_left->setPosition(188, 125);
+	Players_left->setColorBack(ofxUIColor::darkOliveGreen);
+	Players_left->draw();
+
 	img = new ofImage();
 	img->load("D:/Ecole/ISIB/Master/1MA/1st Semester/Second session/Analysis & Data Visualization/Projet - Aout/OF-Tennis/OF-Tennis/bin/data/ball_ag.jpg");
 	img->resize(50, 50);
-	
-	font.load("frabk.ttf", 122);
 
-	/*
-		ofCSVReader csvData("atp2016.csv", ',');
-		vector<vector<string>> * data = csvData.getData();
-		infocsv.setup();
-		infocsv.setName("Info CSV");
-		infocsv.setSize(350, infocsv.getHeight());
-		ofDataProcessing dataproc(data);
-		infocsv.add(champ1.setup("1", ofToString(dataproc.getTournamentAll()[0][0].toString()), 350));
-		//infocsv.add(champ2.setup("2", ofToString(dataproc.getTournamentAll()[0][1].toString()), 350));
-		//infocsv.add(champ3.setup("toggle"), 350);
-		infocsv.add(champ4.setup("4", ofToString(dataproc.getTournamentAll()[0][3].toString()), 350));
-		infocsv.add(champ5.setup(100));
-		//infocsv.add(champ6.setup("6", ofToString(dataproc.getTournamentAll()[0][5].toString()), 350));
-	*/
+	Players_right = new ofxUISuperCanvas("");
+	Players_right->addSpacer();
+	player_right_list = Players_right->addDropDownList("Player 2 ", *names);
+	player_right_list->setAutoClose(true);
+	player_right_list->setAllowMultiple(false);
+	player_right_list->setShowCurrentSelected(true);
+	//player_right_list->setColorBack(ofxUIColor::black);
+	player_right_list->setColorFill(ofxUIColor::black);
+	Players_right->setPosition(616, 125);
+	Players_right->setHeight(48);
+	Players_right->setColorBack(ofxUIColor::darkOliveGreen);
+	Players_right->draw();
 
-	//ofTournament * tr = dataproc.getTournament("Vienna");
-	//infocsv.add(champ7.setup("7", ofToString((*tr).toString()), 350));
-
-	//infocsv.setPosition(200, 200);
-	//info
-
-	header();
-
-
+	ofAddListener(Players_left->newGUIEvent, this, &ofApp::choiceOfPlayersEvent);
+	ofAddListener(Players_right->newGUIEvent, this, &ofApp::choiceOfPlayersEvent);
 }
 
-//--------------------------------------------------------------
-void ofApp::update(){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::draw(){
-	img->draw(475, 75);
-	infocsv.draw();
-	headerC->draw();
-}
-
-//--------------------------------------------------------------
-void ofApp::keyPressed(int key){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::keyReleased(int key){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseMoved(int x, int y ){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseDragged(int x, int y, int button){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mousePressed(int x, int y, int button){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseReleased(int x, int y, int button){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseEntered(int x, int y){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseExited(int x, int y){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::windowResized(int w, int h){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::gotMessage(ofMessage msg){
-
-}
-
-void ofApp::sizeWindow(int size)
-{
-	this->size = size;
-}
-
-
-//--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){ 
-
-}
-
-
-// Methods Agh
-void ofApp::header()
-{
-	/* Choice of Tournament */
-
-	font.drawString("ATP World Tour Stats", 350, 0);
-		headerC = new ofxUISuperCanvas("");
-		headerC->setWidth(250);
-		// Change to automatically fill from getTournamentName();
-		std::vector<string> names = {	"Brisbane", "Chennai", "Doha", "Canada Masters", "Atlanta", "Los Cabos", "Olympics",
-										"Cincinnati Masters","Winston - Salem","Us Open","Metz","Chengdu","Shenzhen",
-										"St.Petersburg","Beijing","Tokyo","Shanghai Masters","Antwerp","Moscow","Stockholm",
-										"Basel","Vienna","Paris Masters","London" };
-		 headerC->addSpacer();
-		 tournament = headerC->addDropDownList("Tournament", names);
-		 tournament->setAutoClose(true);
-		 tournament->setAllowMultiple(false);
-		 std::cout << "size : " << size << std::endl;
-		 ofSetColor(255);
-		 headerC->setPosition(375, 10);
-		 headerC->setWidth(249);
-		 headerC->setHeight(48);
-		 headerC->setColorBack(ofxUIColor::black);
-
-
-		/* Choice Players */
-		 std::vector<string> player_names = { "Brisbane", "Chennai", "Doha",
-			 "Canada Masters", "Atlanta", "Los Cabos", "Olympics",
-			 "Cincinnati Masters","Winston - Salem","Us Open", };
-		 Players_left = new ofxUISuperCanvas("");
-		 Players_left->addSpacer();
-		 player_left_list = Players_left->addDropDownList("Player 1", player_names);
-		 player_left_list->setAutoClose(true);
-		 //player_left_list->setAllowMultiple(false);
-
-		 //Players_left->setWidth(249);
-		 Players_left->setHeight(48);
-		 Players_left->setPosition(200, 75);
-		 //ofSetColor(0, 255, 0);
-		 Players_left->setColorBack(ofxUIColor::black);
-		 Players_left->draw();
-
-		/* image_vs = new ofxUICanvas(" ");
-		 ofImage * loser_ima = new ofImage();
-		 loser_ima->load("D:/Ecole/ISIB/Master/1MA/1st Semester/Second session/Analysis & Data Visualization/Projet - Aout/OF-Tennis/OF-Tennis/bin/data/images/ball.png");
-		 loser_ima->resize(100, 100);
-		 loser_ima->draw(300, 60);
-		 image_vs->addImage("Left", loser_ima, false);
-		 image_vs->setPosition(400, 120);
-		 image_vs->draw();*/
-
-		 //ofxGuiSetTextColor(ofxUIColor::black);
-		 Players_right = new ofxUISuperCanvas("");
-		 Players_right->addSpacer();
-		 player_right_list = Players_right->addDropDownList("Player 2 ", player_names);
-		 player_right_list->setAutoClose(true);
-		 player_right_list->setAllowMultiple(false);
-		 player_right_list->setShowCurrentSelected(true);
-
-
-		 //Players_right->setWidth(249);
-		 Players_right->setHeight(48);
-		 Players_right->setPosition(600, 75);
-		 //Players_right->setWidgetColor(1, ofxUIColor::white);
-		 Players_right->setColorBack(ofxUIColor::black);
-		 Players_right->draw();
-		 
-
-
-		/* Players_infos */
-		 Players_infos_left = new ofxUISuperCanvas("Roger Federer");
-		 Players_infos = new ofxUISuperCanvas("");
-		 Players_infos_right = new ofxUISuperCanvas("Roger Federer");
-
-
-		 // Left
-		 Players_infos_left->addSpacer();
-		 ofImage * winner_image = new ofImage("images/bikers.jpg");
-		 winner_image->draw(185, 120);
-		 winner = Players_infos_left->addImage("Left", winner_image, false);
-		 winner_rank = Players_infos_left->addLabel("Rank : 5", 1);
-		 winner_rank->setColorBack(ofxUIColor::black);
-		 Players_infos_left->addSpacer();
-		 winner_rank = Players_infos_left->addLabel("Rank : 5", 1);
-
-		 Players_infos_left->setPosition(200, 135);
-		 Players_infos_left->setColorBack(ofxUIColor::black);
-		 //ofSetColor(0, 255, 0);
-		 Players_infos_left->draw();
-		
-
-		 // middle Matchs results
-		// Players_infos->addSpacer();
-		 score = Players_infos->addLabel("        Roger Federer", 1);
-		 best_of = Players_infos->addLabel("        Roger Federer", 1);
-		 Round = Players_infos->addLabel("        Roger Federer", 1);
-		 duree = Players_infos->addLabel("        Roger Federer", 1);
-		 Players_infos->setPosition(400, 135);
-		 Players_infos->setColorBack(ofxUIColor::black);
-		 Players_infos->centerWidgetsOnCanvas();
-		 Players_infos->draw();
-
-		 // Right
-		 Players_infos_right->addSpacer();
-		 ofImage * loser_image = new ofImage("images/bikers.jpg");
-		 loser_image->draw(515, 100);
-
-		 loser = Players_infos_right->addImage("Left", loser_image, false);
-		 loser_rank = Players_infos_right->addLabel("Rank : 5", 1);
-		 Players_infos_right->addSpacer();
-		
-
-		 Players_infos_right->setPosition(600, 135);
-		 Players_infos_right->setColorBack(ofxUIColor::black);
-		 Players_infos_right->draw();
-
-
-}
-
-void ofApp::PlayersInfos()
+void ofApp::choiceOfPlayersEvent(ofxUIEventArgs & e)
 {
 }
 
-void ofApp::MatchsStats()
+void ofApp::playersInfos()
+{
+
+	// left  image
+	component = new ofxDatGuiLabel("Andy Murray");
+	component->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+	component->setPosition(186, 175);
+	component->setWidth(214, 0);
+	components.push_back(component);
+
+	left = new ofImage();
+	left->load("D:/Ecole/ISIB/Master/1MA/1st Semester/Second session/Analysis & Data Visualization/Projet - Aout/DatGuiEx/DatGuiEx/bin/data/images/Andy Murray.png");
+	left->resize(212, 148);
+
+
+	component = new ofxDatGuiLabel("Rank : 5 ");
+	component->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+	component->setPosition(186, 351);
+	component->setWidth(214, 0);
+	components.push_back(component);
+
+	// 
+	component = new ofxDatGuiLabel("2-6 7-6(4) 6-4");
+	component->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+	component->setPosition(400, 225);
+	component->setWidth(214, 0);
+	components.push_back(component);
+
+	component = new ofxDatGuiLabel("R16");
+	component->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+	component->setPosition(400, 250);
+	component->setWidth(214, 0);
+	components.push_back(component);
+	component = new ofxDatGuiLabel("3");
+	component->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+	component->setPosition(400, 275);
+	component->setWidth(214, 0);
+	components.push_back(component);
+
+	component = new ofxDatGuiLabel("1h 35min");
+	component->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+	component->setPosition(400, 300);
+	component->setWidth(214, 0);
+	components.push_back(component);
+
+
+	// right  image
+	component = new ofxDatGuiLabel("Roger Federer");
+	component->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+	component->setPosition(614, 175);
+	component->setWidth(214, 0);
+	components.push_back(component);
+
+	right = new ofImage();
+	right->load("D:/Ecole/ISIB/Master/1MA/1st Semester/Second session/Analysis & Data Visualization/Projet - Aout/DatGuiEx/DatGuiEx/bin/data/images/Roger Federer.png");
+	right->resize(212, 148);
+
+	component = new ofxDatGuiLabel("Rank : 2");
+	component->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+	component->setPosition(614, 351);
+	component->setWidth(214, 0);
+	components.push_back(component);
+}
+
+void ofApp::playersInfosHide()
+{
+	for (int i = 0; i < components.size(); i++) components[i]->setPosition(1002, 800);
+
+}
+
+void ofApp::matchsInfos()
+{
+
+	std::vector<string> stats = { "11", "8", "60%", "71%","56%", "14", "50%","50%", "49%" };
+	std::vector<string> stats_names = { "Aces", "Double Faults", "1st Service", "1st Service Won",
+		"2nd Service Won", "Service Games Played", "Break Points Saved",
+		"Break Points Faced", "Total Service Points" };
+	// gauche 
+	for (size_t i = 0; i < 9; i++)
+	{
+		component = new ofxDatGuiLabel(stats[i]);
+		component->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+		component->setPosition(186, 385 + (i * p));
+		component->setWidth(214, 0);
+		component->onButtonEvent(this, &ofApp::onButtonEvent);
+		components.push_back(component);
+
+	}
+	// milieu
+
+	for (size_t i = 0; i < 9; i++)
+	{
+		component = new ofxDatGuiLabel(stats_names[i]);
+		component->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+		component->setPosition(400, 385 + (i * p));
+		component->setWidth(214, 0);
+		component->onButtonEvent(this, &ofApp::onButtonEvent);
+		components.push_back(component);
+
+	}
+	// droite
+
+	for (size_t i = 0; i < 9; i++)
+	{
+		component = new ofxDatGuiLabel(stats[i]);
+		component->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+		component->setPosition(614, 385 + (i * p));
+		component->setWidth(214, 0);
+		component->onButtonEvent(this, &ofApp::onButtonEvent);
+		components.push_back(component);
+
+	}
+}
+
+void ofApp::matchsInfosHide()
 {
 }
+
+
