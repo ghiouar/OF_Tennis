@@ -1,5 +1,7 @@
 #include "ofTournament.h"
-
+#include <algorithm>
+#include <iostream>
+#include <string>
 
 
 ofTournament::ofTournament(string id , string name, string surface, string level, string date)
@@ -10,7 +12,8 @@ ofTournament::ofTournament(string id , string name, string surface, string level
 	this->surface = surface;
 	this->date = date;
 	this->matchs = new vector<ofMatch>();
-
+	this->playersNames = new vector<string>();
+	this->opponents = new vector<string>();
 }
 
 
@@ -44,14 +47,74 @@ string ofTournament::getDate()
 	return date;
 }
 
+vector<string>* ofTournament::getPlayersNames()
+{
+	return this->playersNames;
+}
+
+vector<string>* ofTournament::getOpponents(string name)
+{
+	opponents->clear();
+
+	for each (ofMatch match in *matchs)
+	{
+		if (match.getWinner()->getName().compare(name) == 0) 
+		{
+			opponents->push_back(match.getLoser()->getName());
+		}
+
+		if (match.getLoser()->getName().compare(name) == 0)
+		{
+			opponents->push_back(match.getWinner()->getName());
+		}
+	}
+	return opponents;
+}
+
 vector<ofMatch>* ofTournament::getMatchs()
 {
 	return matchs;
 }
 
+ofMatch * ofTournament::getMatch(string name_winner, string name_loser)
+{
+	ofMatch * mt = new ofMatch();
+	bool found = false;
+	int i = 0;
+		
+	while (!found && i <  (*matchs).size()) {
+		if (((*matchs)[i].getWinner()->getName().compare(name_winner) == 0 && 
+			(*matchs)[i].getLoser()->getName().compare(name_loser) == 0)
+			||
+			((*matchs)[i].getWinner()->getName().compare(name_loser) == 0 && 
+			(*matchs)[i].getLoser()->getName().compare(name_winner) == 0)) {
+
+			mt =  &(*matchs)[i];
+			found = true;
+		}
+		
+		i++;
+	}
+
+	return mt;
+
+}
+
 void ofTournament::addMatch(ofMatch match)
 {
 	this->matchs->push_back(match);
+
+	if (std::find(playersNames->begin(), playersNames->end(), 
+		match.getWinner()->getName()) == playersNames->end())
+	{
+		playersNames->push_back(match.getWinner()->getName());
+	}
+
+	if (std::find(playersNames->begin(), playersNames->end(),
+		match.getLoser()->getName()) == playersNames->end())
+	{
+		playersNames->push_back(match.getLoser()->getName());
+	}
 }
 
 void ofTournament::setID(string id)

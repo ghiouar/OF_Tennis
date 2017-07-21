@@ -2,115 +2,60 @@
 #include "ofxUI.h"
 #include "CSV\ofCSVReader.h"
 #include "CSV\ofDataProcessing.h"
+#include "Model\ofMatch.h"
+#include <string>
 
 
 void ofApp::setup()
 {
-	font = new ofTrueTypeFont();
-	font->load("ofxbraitsch/fonts/Verdana.ttf",9);
-	x = 200;
-	y = 150;
-	p = 25;
-
-
-	/*component = new ofxDatGuiLabel("Tournament");
-	component->setLabelAlignment(ofxDatGuiAlignment::CENTER);
-	component->setPosition(350, 10);
-	component->setWidth(300, 0);
-	components.push_back(component);*/
-
+	x = 200; y = 150; p = 25;
 
 	ofCSVReader csvData("atp2016.csv", ',');
-	vector<vector<string>> * data = csvData.getData();
-	ofDataProcessing processedData(data);
-	names = processedData.getTournamentsNames();
+	processedData = new ofDataProcessing(csvData.getData());
+	names = processedData->getTournamentsNames();
+
+	left = new ofImage();
+	left->load("images/players/empty.png");
+	left->resize(212, 148);
+	left->draw(188, 202);
+
+	right = new ofImage();
+	right->load("images/players/empty.png");
+	right->resize(212, 148);
+	
+	image_header = new ofImage();
+	image_header->load("images/Header.png");
+	image_footer = new ofImage();
+	image_footer->load("images/footers.png");
 
 	header();
 	choiceOfPlayers();
-	playersInfos();
-	matchsInfos();
-
-
 }
 
 void ofApp::update()
 {
-
-	for (int i = 0; i < components.size(); i++) components[i]->update();
+	for (int i = 0; i<components.size(); i++) components[i]->draw();
 	view->draw();
-	left->draw(202, 202);
 	img->draw(475, 125);
-	right->draw(602, 202);
+	left->draw(188, 202);
+	right->draw(616, 202);
 }
 
 void ofApp::draw()
 {
 	for (int i = 0; i<components.size(); i++) components[i]->draw();
 	view->draw();
-	left->draw(188, 202);
 	img->draw(475, 125);
+	left->draw(188, 202);
 	right->draw(616, 202);
+	image_header->draw(0, 10);
+	image_footer->draw(0, 615);
+	
 }
 
-/*
-event listeners
-*/
-
-void ofApp::onButtonEvent(ofxDatGuiButtonEvent e)
-{
-	cout << "onButtonEvent: " << e.target->getLabel() << endl;
-}
-
-void ofApp::onToggleEvent(ofxDatGuiToggleEvent e)
-{
-	cout << "onToggleEvent: " << e.target->getLabel() << "::" << e.target->getChecked() << endl;
-}
-
-void ofApp::onSliderEvent(ofxDatGuiSliderEvent e)
-{
-	cout << "onSliderEvent: " << e.value << "::" << e.scale << endl;
-}
-
-void ofApp::onDropdownEvent(ofxDatGuiDropdownEvent e)
-{
-	cout << "onDropdownEvent: " << e.child << endl;
-}
-
-void ofApp::onMatrixEvent(ofxDatGuiMatrixEvent e)
-{
-	cout << "onMatrixEvent: " << e.child << "::" << e.enabled << endl;
-}
-
-void ofApp::onColorPickerEvent(ofxDatGuiColorPickerEvent e)
-{
-	cout << "onColorPickerEvent: " << e.color << endl;
-}
-
-void ofApp::on2dPadEvent(ofxDatGui2dPadEvent e)
-{
-	cout << "on2dPadEvent: " << e.x << "::" << e.y << endl;
-}
-
-void ofApp::onTextInputEvent(ofxDatGuiTextInputEvent e)
-{
-	cout << "onButtonEvent: " << e.text << endl;
-}
-
-
-
-void ofApp::onScrollViewEvent(ofxDatGuiScrollViewEvent e)
-{
-	cout << e.target->getLabel() << " [index " << e.index << "] selected in [" << e.parent->getName() << "]" << endl;
-}
 
 void ofApp::header()
 {
-	/*view = new ofxDatGuiScrollView("Tounament", 3);
-	view->setWidth(300);
-	view->setPosition(350, 37);
-	view->onScrollViewEvent(this, &ofApp::onScrollViewEvent);
-	for (int i = 0; i<names.size(); i++) view->add(ofToString(names[i]));*/
-
 	view = new ofxUISuperCanvas("");
 	view->addSpacer();
 	view_list = view->addDropDownList("Tournament", *names);
@@ -118,7 +63,7 @@ void ofApp::header()
 	view_list->setAllowMultiple(false);
 	view_list->setShowCurrentSelected(true);
 	view->setHeight(48);
-	view->setPosition(400, 10);
+	view->setPosition(400, 60);
 	view->setColorBack(ofxUIColor::darkOliveGreen);
 	view->draw();
 	ofAddListener(view->newGUIEvent, this, &ofApp::headerEvent);
@@ -127,12 +72,23 @@ void ofApp::header()
 void ofApp::headerEvent(ofxUIEventArgs & e)
 {
 	string name = e.getName();
-	std::cout << name << std::endl;
-	if (name.compare("Doha") == 0) {
+	if (name.compare("Tournament") == 0) {
 		playersInfosHide();
 	} else {
-		playersInfos();
-		matchsInfos();
+		player_left_list->clearToggles();
+		tr = processedData->getTournament(name);
+		Players_left = new ofxUISuperCanvas("");
+		Players_left->addSpacer();
+		player_left_list = Players_left->addDropDownList("Player 1", *tr->getPlayersNames());
+		player_left_list->setAutoClose(true);
+		player_left_list->setAllowMultiple(false);
+		player_left_list->setShowCurrentSelected(true);
+		Players_left->setHeight(48);
+		Players_left->setPosition(188, 125);
+		Players_left->setColorBack(ofxUIColor::darkOliveGreen);
+		Players_left->draw();
+
+		ofAddListener(Players_left->newGUIEvent, this, &ofApp::player_left_Event);
 	}
 }
 
@@ -149,7 +105,7 @@ void ofApp::choiceOfPlayers()
 	Players_left->draw();
 
 	img = new ofImage();
-	img->load("D:/Ecole/ISIB/Master/1MA/1st Semester/Second session/Analysis & Data Visualization/Projet - Aout/OF-Tennis/OF-Tennis/bin/data/ball_ag.jpg");
+	img->load("ball_ag.jpg");
 	img->resize(50, 50);
 
 	Players_right = new ofxUISuperCanvas("");
@@ -158,137 +114,143 @@ void ofApp::choiceOfPlayers()
 	player_right_list->setAutoClose(true);
 	player_right_list->setAllowMultiple(false);
 	player_right_list->setShowCurrentSelected(true);
-	//player_right_list->setColorBack(ofxUIColor::black);
 	player_right_list->setColorFill(ofxUIColor::black);
 	Players_right->setPosition(616, 125);
 	Players_right->setHeight(48);
 	Players_right->setColorBack(ofxUIColor::darkOliveGreen);
 	Players_right->draw();
 
-	ofAddListener(Players_left->newGUIEvent, this, &ofApp::choiceOfPlayersEvent);
-	ofAddListener(Players_right->newGUIEvent, this, &ofApp::choiceOfPlayersEvent);
+	ofAddListener(Players_left->newGUIEvent, this, &ofApp::player_left_Event);
+	ofAddListener(Players_right->newGUIEvent, this, &ofApp::player_right_Event);
 }
 
-void ofApp::choiceOfPlayersEvent(ofxUIEventArgs & e)
+void ofApp::player_left_Event(ofxUIEventArgs & e)
 {
+	string name = e.getName();
+	if (name.compare("Player 1") == 0 ) {
+		playersInfosHide();
+	} else {
+		name_left = name;
+		player_right_list->clearToggles();
+		nameopp = tr->getOpponents(name);
+		Players_right = new ofxUISuperCanvas("");
+		Players_right->addSpacer();
+		player_right_list = Players_right->addDropDownList("Player 2 ", *nameopp);
+		player_right_list->setAutoClose(true);
+		player_right_list->setAllowMultiple(false);
+		player_right_list->setShowCurrentSelected(true);
+		player_right_list->setColorFill(ofxUIColor::black);
+		Players_right->setPosition(616, 125);
+		Players_right->setHeight(48);
+		Players_right->setColorBack(ofxUIColor::darkOliveGreen);
+		Players_right->draw();
+		ofAddListener(Players_right->newGUIEvent, this, &ofApp::player_right_Event);
+	}
+}
+
+void ofApp::player_right_Event(ofxUIEventArgs & e)
+{
+	string name = e.getName();
+	if (!(std::find(nameopp->begin(), nameopp->end(), name) == nameopp->end()))
+	{
+		std::cout << name << std::endl;
+		match = tr->getMatch(name_left, name);
+		playersInfos();
+		matchsInfos();
+		left->draw(188, 202);
+		right->draw(616, 202);
+	}
 }
 
 void ofApp::playersInfos()
 {
+	string rank_cw = "Rank : " +match->getWinner()->getRank();
+	string rank_cl = "Rank : " + match->getLoser()->getRank();
+	int time_i = std::stoi(match->getMinutes());
+	int  hours, minutes;
+	hours = time_i / 60;
+	minutes = time_i % 60;
+	std::ostringstream time;
+	time << hours << "h" << minutes;
+	components.push_back(getNewComponent(match->getWinner()->getName(), 186, 175,ofColor::sandyBrown, ofColor::black));
+	components.push_back(getNewComponent(rank_cw, 186, 351, ofColor::sandyBrown, ofColor::black));
+	components.push_back(getNewComponent("Score : " +match->getScore(), 400, 250, ofColor::sandyBrown, ofColor::black));
+	//components.push_back(getNewComponent(match->getBest_of(), 400, 225, ofColor::white, ofColor::black));
+	//components.push_back(getNewComponent(match->getRound(), 400, 275, ofColor::orange, ofColor::black));
+	components.push_back(getNewComponent("Duree du match : " + time.str(), 400, 275, ofColor::sandyBrown, ofColor::black));
+	components.push_back(getNewComponent(match->getLoser()->getName(), 614, 175, ofColor::sandyBrown, ofColor::black));
+	components.push_back(getNewComponent(rank_cl, 614, 351, ofColor::sandyBrown, ofColor::black));
 
-	// left  image
-	component = new ofxDatGuiLabel("Andy Murray");
-	component->setLabelAlignment(ofxDatGuiAlignment::CENTER);
-	component->setPosition(186, 175);
-	component->setWidth(214, 0);
-	components.push_back(component);
-
-	left = new ofImage();
-	left->load("D:/Ecole/ISIB/Master/1MA/1st Semester/Second session/Analysis & Data Visualization/Projet - Aout/DatGuiEx/DatGuiEx/bin/data/images/Andy Murray.png");
-	left->resize(212, 148);
-
-
-	component = new ofxDatGuiLabel("Rank : 5 ");
-	component->setLabelAlignment(ofxDatGuiAlignment::CENTER);
-	component->setPosition(186, 351);
-	component->setWidth(214, 0);
-	components.push_back(component);
-
-	// 
-	component = new ofxDatGuiLabel("2-6 7-6(4) 6-4");
-	component->setLabelAlignment(ofxDatGuiAlignment::CENTER);
-	component->setPosition(400, 225);
-	component->setWidth(214, 0);
-	components.push_back(component);
-
-	component = new ofxDatGuiLabel("R16");
-	component->setLabelAlignment(ofxDatGuiAlignment::CENTER);
-	component->setPosition(400, 250);
-	component->setWidth(214, 0);
-	components.push_back(component);
-	component = new ofxDatGuiLabel("3");
-	component->setLabelAlignment(ofxDatGuiAlignment::CENTER);
-	component->setPosition(400, 275);
-	component->setWidth(214, 0);
-	components.push_back(component);
-
-	component = new ofxDatGuiLabel("1h 35min");
-	component->setLabelAlignment(ofxDatGuiAlignment::CENTER);
-	component->setPosition(400, 300);
-	component->setWidth(214, 0);
-	components.push_back(component);
-
-
-	// right  image
-	component = new ofxDatGuiLabel("Roger Federer");
-	component->setLabelAlignment(ofxDatGuiAlignment::CENTER);
-	component->setPosition(614, 175);
-	component->setWidth(214, 0);
-	components.push_back(component);
-
-	right = new ofImage();
-	right->load("D:/Ecole/ISIB/Master/1MA/1st Semester/Second session/Analysis & Data Visualization/Projet - Aout/DatGuiEx/DatGuiEx/bin/data/images/Roger Federer.png");
-	right->resize(212, 148);
-
-	component = new ofxDatGuiLabel("Rank : 2");
-	component->setLabelAlignment(ofxDatGuiAlignment::CENTER);
-	component->setPosition(614, 351);
-	component->setWidth(214, 0);
-	components.push_back(component);
+	left = addNewImage(match->getWinner()->getName());
+	right = addNewImage(match->getLoser()->getName());
+	left->draw(188, 202);
+	right->draw(616, 202);
 }
 
 void ofApp::playersInfosHide()
 {
 	for (int i = 0; i < components.size(); i++) components[i]->setPosition(1002, 800);
-
+	right->load("images/players/empty.png");
+	right->resize(212, 148);
+	left->load("images/players/empty.png");
+	left->resize(212, 148);
 }
 
 void ofApp::matchsInfos()
 {
-
-	std::vector<string> stats = { "11", "8", "60%", "71%","56%", "14", "50%","50%", "49%" };
-	std::vector<string> stats_names = { "Aces", "Double Faults", "1st Service", "1st Service Won",
-		"2nd Service Won", "Service Games Played", "Break Points Saved",
-		"Break Points Faced", "Total Service Points" };
-	// gauche 
+	vector<string> stats_winner = getInfoVector(match->getWinner());
+	vector<string> stats_loser  = getInfoVector(match->getLoser());
+	vector<string> stats_names  = { "Aces", "Double Faults", "1st Service", "1st Service Won",
+									"2nd Service Won", "Service Games Played", "Break Points Saved",
+									"Break Points Faced", "Total Service Points" };
 	for (size_t i = 0; i < 9; i++)
 	{
-		component = new ofxDatGuiLabel(stats[i]);
-		component->setLabelAlignment(ofxDatGuiAlignment::CENTER);
-		component->setPosition(186, 385 + (i * p));
-		component->setWidth(214, 0);
-		component->onButtonEvent(this, &ofApp::onButtonEvent);
-		components.push_back(component);
-
-	}
-	// milieu
-
-	for (size_t i = 0; i < 9; i++)
-	{
-		component = new ofxDatGuiLabel(stats_names[i]);
-		component->setLabelAlignment(ofxDatGuiAlignment::CENTER);
-		component->setPosition(400, 385 + (i * p));
-		component->setWidth(214, 0);
-		component->onButtonEvent(this, &ofApp::onButtonEvent);
-		components.push_back(component);
-
-	}
-	// droite
-
-	for (size_t i = 0; i < 9; i++)
-	{
-		component = new ofxDatGuiLabel(stats[i]);
-		component->setLabelAlignment(ofxDatGuiAlignment::CENTER);
-		component->setPosition(614, 385 + (i * p));
-		component->setWidth(214, 0);
-		component->onButtonEvent(this, &ofApp::onButtonEvent);
-		components.push_back(component);
+		components.push_back(getNewComponent(stats_winner[i], 186, 380 + (i * p), ofColor::sandyBrown, ofColor::black));
+		components.push_back(getNewComponent(stats_names[i], 400, 380 + (i * p), ofColor::sandyBrown, ofColor::black));
+		components.push_back(getNewComponent(stats_loser[i], 614, 380 + (i * p), ofColor::sandyBrown, ofColor::black));
 
 	}
 }
 
-void ofApp::matchsInfosHide()
+
+vector<string> ofApp::getInfoVector(ofPlayer * player)
 {
+	vector<string> data =  vector<string>();
+	data.push_back(player->getAce());
+	data.push_back(player->getDoubleFaults());
+	data.push_back(player->getFstIn());
+	data.push_back(player->getFstWon());
+	data.push_back(player->getSndWon());
+	data.push_back(player->getSvGms());
+	data.push_back(player->getBpSaved());
+	data.push_back(player->getBpFaced());
+	data.push_back(player->getSvpt());
+	return data;
+}
+
+ofxDatGuiComponent * ofApp::getNewComponent(string label, int x, int y, ofColor colorBack, ofColor colorLabel)
+{
+	ofxDatGuiComponent * component = new ofxDatGuiLabel(label);
+	component->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+	component->setPosition(x, y);
+	component->setBackgroundColor(colorBack);
+	component->setLabelColor(colorLabel);
+	component->setWidth(214, 0);
+	component->setLabelUpperCase(false);
+	return component;
+}
+
+ofImage * ofApp::addNewImage(string name)
+{
+	ofImage * image_tmp = new ofImage();
+	string image_name_right = "images/players/";
+	image_name_right += name;
+	image_name_right += ".png";
+	if (!(image_tmp->load(image_name_right))) {
+		image_tmp->load("images/players/no-image.png");
+	}
+	image_tmp->resize(212, 148);
+	return image_tmp;
 }
 
 

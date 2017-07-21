@@ -26,10 +26,6 @@ public:
 	void setMinutes(string minutes);
 	void setId(string id);
 
-	//void toString();
-
-
-
 private:
 	ofPlayer * winner;
 	ofPlayer * loser;

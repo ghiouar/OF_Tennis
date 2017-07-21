@@ -3,12 +3,8 @@
 
 //========================================================================
 int main() {
-	ofSetupOpenGL(1024, 768, OF_WINDOW);			// <-------- setup the GL context
+	ofSetupOpenGL(1024, 655, OF_WINDOW);			
 	ofBackground(255);
-	ofSetWindowTitle("ATP world tour");
-	// this kicks off the running of my app
-	// can be OF_WINDOW or OF_FULLSCREEN
-	// pass in width and height too:
+	ofSetWindowTitle("Men's Professional Tennis | ATP World Tour");
 	ofRunApp(new ofApp());
-
 }

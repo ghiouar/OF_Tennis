@@ -17,8 +17,10 @@ public:
 	string getLevel();
 	string getSurface();
 	string getDate();
-
+	vector<string> * getPlayersNames();
+	vector <string> * getOpponents(string name);
 	vector<ofMatch> * getMatchs();
+	ofMatch * getMatch(string name_winner, string name_loser);
 	void addMatch(ofMatch  match);
 
 	void setID(string id);
@@ -36,6 +38,9 @@ private:
 	string surface;
 	string date;
 	vector<ofMatch> * matchs;
+	vector<string> * playersNames;
+	vector <string> * opponents;
+
 	
 		
 

@@ -21,7 +21,7 @@ public:
 	string getRank();
 	string getRank_points();
 	string getAce();
-	string getDf();
+	string getDoubleFaults();
 	string getSvpt();
 	string getFstIn();
 	string getFstWon();
@@ -41,7 +41,7 @@ public:
 	void setRank(string value);
 	void setRank_points(string value);
 	void setAce(string value);
-	void setDf(string value);
+	void setDoubleFaults(string value);
 	void setSvpt(string value);
 	void setFstIn(string value);
 	void setFstWon(string value);
@@ -62,7 +62,7 @@ private:
 	string rank_points;
 
 	string ace;
-	string df;
+	string doubleFaults;
 	string svpt;
 	string fstIn;
 	string fstWon;

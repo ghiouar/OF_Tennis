@@ -3,6 +3,8 @@
 #include "ofMain.h"
 #include "ofxDatGui.h"
 #include "ofxUI.h"
+#include "CSV\ofDataProcessing.h"
+#include "Model\ofMatch.h"
 
 class ofApp : public ofBaseApp {
 
@@ -17,7 +19,6 @@ public:
 	void header();
 	void headerEvent(ofxUIEventArgs &e);
 
-	
 	// choice Of Players
 	ofxUISuperCanvas * Players_left;
 	ofxUIDropDownList * player_left_list;
@@ -25,7 +26,8 @@ public:
 	ofxUISuperCanvas * Players_right;
 	ofxUIDropDownList * player_right_list;
 	void choiceOfPlayers();
-	void choiceOfPlayersEvent(ofxUIEventArgs &e);
+	void player_left_Event(ofxUIEventArgs &e);
+	void player_right_Event(ofxUIEventArgs &e);
 
 	// Players Infos
 	ofImage * left;
@@ -37,30 +39,24 @@ public:
 	vector<ofxDatGuiComponent*> components;
 	ofxDatGuiComponent* component;
 	void matchsInfos();
-	void matchsInfosHide();
-
+	vector<string> getInfoVector(ofPlayer * player);
+	ofxDatGuiComponent* getNewComponent(string label, int x, int y, ofColor colorBack, ofColor colorLabel);
+	ofImage *  addNewImage(string name);
 
 	// Other
 	ofTrueTypeFont * font;
 	ofImage * img;
+	ofImage * image_footer;
+	ofImage * image_header;
 	ofxDatGuiValuePlotter* plotter;
 	std::vector<std::string> * names;
 	int x, y, p;
+	vector<string> * nameopp;
 
+	// CSV data 
+	ofDataProcessing * processedData;
+	ofTournament * tr;
+	string name_left;
+	ofMatch * match;
 	
-
-
-	void onButtonEvent(ofxDatGuiButtonEvent e);
-	void onToggleEvent(ofxDatGuiToggleEvent e);
-	void onSliderEvent(ofxDatGuiSliderEvent e);
-	void onDropdownEvent(ofxDatGuiDropdownEvent e);
-	void onMatrixEvent(ofxDatGuiMatrixEvent e);
-	void onColorPickerEvent(ofxDatGuiColorPickerEvent e);
-	void on2dPadEvent(ofxDatGui2dPadEvent e);
-	void onTextInputEvent(ofxDatGuiTextInputEvent e);
-	void onScrollViewEvent(ofxDatGuiScrollViewEvent e);
-
-
-	
-
 };

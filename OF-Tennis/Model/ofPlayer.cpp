@@ -68,9 +68,9 @@ string ofPlayer::getAce()
 	return this->ace;
 }
 
-string ofPlayer::getDf() 
+string ofPlayer::getDoubleFaults()
 {
-	return this->df;
+	return this->doubleFaults;
 }
 
 string ofPlayer::getSvpt() 
@@ -164,9 +164,9 @@ void ofPlayer::setAce(string value)
 	this->ace = value;
 }
 
-void ofPlayer::setDf(string value)
+void ofPlayer::setDoubleFaults(string value)
 {
-	this->df = value;
+	this->doubleFaults = value;
 }
 
 void ofPlayer::setSvpt(string value)

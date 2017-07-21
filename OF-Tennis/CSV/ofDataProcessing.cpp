@@ -62,7 +62,6 @@ void ofDataProcessing::transform()
 	for (unsigned i = 1; i < (*data).size(); i++)
 	{
 
-		/* Tmp, to be updated to inlcude matchs */
 		string name = (*data)[i][1];
 		if (name.compare(name_prev) != 0) {
 			tournament->push_back(tourn);
@@ -74,15 +73,11 @@ void ofDataProcessing::transform()
 			tourn.setDate((*data)[i][4]);
 			name_prev = name;
 			tournament_name->push_back(name);
-			//std::cout << name << std::endl;
 			tourn.addMatch(getMatch(&(*data)[i]));
-			
 		}
 		else {
 			tourn.addMatch(getMatch(&(*data)[i]));
 		}
-
-		
 	}
 }
 
@@ -100,32 +95,20 @@ ofMatch  ofDataProcessing::getMatch(vector<string> * info)
 			match_num		score		best_of		round	minutes
 		*/
 		match.setId((*info)[6]);
-		/*string score = (*info)[27];
-		std::cout << (*info)[27] << std::endl;*/
 		match.setScore((*info)[27]);
 		match.setBest_of((*info)[28]);
 		match.setRound((*info)[29]);
 		match.setMinutes((*info)[30]);
 
-		//std::cout << (*info)[10] << std::endl;
 		playerInfo_firstPart(info, winner,7,16);
 		playerInfo_secondPart(info, winner, 31, 39);
 
-		//std::cout << (*info)[20] << std::endl;
 		playerInfo_secondPart(info, loser, 40, 48);
 		playerInfo_firstPart(info, loser, 17, 26);
 
-
 		match.setWinner(winner);
 		match.setLoser(loser);
-
-		
 	}
-
-	/*std::cout << match.getId() << " : ";
-	std::cout << match.getWinner()->getName() << " (w) - ";
-	std::cout << match.getLoser()->getName() << " (l) " << std::endl;*/
-
 
 	return match;
 }
@@ -187,7 +170,7 @@ void ofDataProcessing::playerInfo_secondPart(vector<string>* info, ofPlayer * pl
 		case 31:
 		case 40: player->setAce((*info)[i]); break;
 		case 32:
-		case 41: player->setDf((*info)[i]); break;
+		case 41: player->setDoubleFaults((*info)[i]); break;
 		case 33:
 		case 42: player->setSvpt((*info)[i]); break;
 		case 34:
