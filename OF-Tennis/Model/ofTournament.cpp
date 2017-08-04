@@ -104,6 +104,10 @@ void ofTournament::addMatch(ofMatch match)
 {
 	this->matchs->push_back(match);
 
+	if (match.getRound().compare("F")) {
+		winner_tournement = match.getWinner()->getName();
+		second_place = match.getLoser()->getName();
+	}
 	if (std::find(playersNames->begin(), playersNames->end(), 
 		match.getWinner()->getName()) == playersNames->end())
 	{

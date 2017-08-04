@@ -34,10 +34,13 @@ public:
 private:
 	string id;
 	string name;
+	string winner_tournement;
+	string second_place;
 	string level;
 	string surface;
 	string date;
 	vector<ofMatch> * matchs;
+
 	vector<string> * playersNames;
 	vector <string> * opponents;
 
