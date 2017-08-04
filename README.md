@@ -102,13 +102,13 @@ void ofApp::setup() {
 		if (succesConnexion) {
 		    ofDynamixel * dynamixel = new ofDynamixel(ID, portConnexion);
 		    
-			// Reading infos
+			//  Read the information of the control table
 			printf(dynamixel->getControlTable()->getID());
 			printf(dynamixel->getControlTable()->modelNumber());
 			printf(dynamixel->getControlTable()->firmwareVersion());
 			printf(dynamixel->getControlTable()->baudRate());
 		
-			// updating info 
+			// Change the information of the control table
 			dynamixel->getControlTable()->setGoalPosition(512);
 			dynamixel->getControlTable()->setLed(1);
 		}
