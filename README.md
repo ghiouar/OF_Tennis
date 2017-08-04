@@ -84,14 +84,14 @@ Example of use
 void ofApp::setup() {
     ofConnexion * portConnexion = new ofConnexion(DEVICENAME, PROTOCOL_VERSION, BAUDRATE);
     
-		bool succesConnexion = portConnexion->open();
-		if (succesConnexion)
+		bool succes = portConnexion->open();
+		if (succes)
 		{	
-			printf("Succeeded to open the port!\n");
-			succesConnexion = portConnexion->setBaudRate(57142);
-			if (succesConnexion)
+			printf("Port is opened!\n");
+			succes = portConnexion->setBaudRate(57142);
+			if (succes)
 			{
-				printf("Succeeded to change the baudrate!\n");
+				printf("baudrate is changed!\n");
 			} else {
 				printf("Failed to change the baudrate!\n");
 			} 
@@ -99,10 +99,10 @@ void ofApp::setup() {
 			printf("Failed to open the port!\n");
 		}
 
-		if (succesConnexion) {
+		if (succes) {
 		    ofDynamixel * dynamixel = new ofDynamixel(ID, portConnexion);
 		    
-			//  Read the information of the control table
+			// Read the information of the control table
 			printf(dynamixel->getControlTable()->getID());
 			printf(dynamixel->getControlTable()->modelNumber());
 			printf(dynamixel->getControlTable()->firmwareVersion());
