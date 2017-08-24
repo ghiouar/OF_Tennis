@@ -63,6 +63,7 @@ void ofDataProcessing::transform()
 	{
 
 		string name = (*data)[i][1];
+
 		if (name.compare(name_prev) != 0) {
 			tournament->push_back(tourn);
 			tourn = ofTournament();

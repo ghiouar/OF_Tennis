@@ -11,9 +11,19 @@ ofTournament::ofTournament(string id , string name, string surface, string level
 	this->level = level;
 	this->surface = surface;
 	this->date = date;
+
 	this->matchs = new vector<ofMatch>();
+	this->rounds = new vector<string>();
+	//this->matchs_qf = new vector<ofMatch>();
+	////this->matchs_r16 = new vector<ofMatch>();
+	//this->matchs_r32 = new vector<ofMatch>();
+	//this->matchs_r64 = new vector<ofMatch>();
+	//this->matchs_r128 = new vector<ofMatch>();
+
 	this->playersNames = new vector<string>();
 	this->opponents = new vector<string>();
+	this->playersNamesByRound = new vector<string>();
+	//this->opponents = new vector<string>();
 }
 
 
@@ -58,12 +68,12 @@ vector<string>* ofTournament::getOpponents(string name)
 
 	for each (ofMatch match in *matchs)
 	{
-		if (match.getWinner()->getName().compare(name) == 0) 
+		if (match.getWinner()->getName().compare(name) == 0 && match.getRound().compare(this->round) == 0)
 		{
 			opponents->push_back(match.getLoser()->getName());
 		}
 
-		if (match.getLoser()->getName().compare(name) == 0)
+		if (match.getLoser()->getName().compare(name) == 0 && match.getRound().compare(this->round) == 0)
 		{
 			opponents->push_back(match.getWinner()->getName());
 		}
@@ -102,9 +112,10 @@ ofMatch * ofTournament::getMatch(string name_winner, string name_loser)
 
 void ofTournament::addMatch(ofMatch match)
 {
+
 	this->matchs->push_back(match);
 
-	if (match.getRound().compare("F")) {
+	if (match.getRound().compare("F") == 0) {
 		winner_tournement = match.getWinner()->getName();
 		second_place = match.getLoser()->getName();
 	}
@@ -149,4 +160,50 @@ void ofTournament::setDate(string date)
 string ofTournament::toString()
 {
 	return id + " " + name + " " + level + " " + surface + " " + date;
+}
+
+
+vector<string>* ofTournament::getRounds() {
+	rounds->clear();
+
+	for each (ofMatch match in *matchs)
+	{
+		if (std::find(rounds->begin(), rounds->end(), match.getRound()) == rounds->end())
+		{
+			rounds->push_back(match.getRound());
+		}
+	}
+	return rounds;
+}
+
+
+vector<string>* ofTournament::getPlayersNamesByRound()
+{
+	 playersNamesByRound->clear();
+	for each (ofMatch match in *matchs) 
+	{
+		if (match.getRound().compare(this->round) == 0)
+		{
+			if (std::find(playersNamesByRound->begin(), playersNamesByRound->end(),
+				match.getWinner()->getName()) == playersNamesByRound->end())
+			{
+				playersNamesByRound->push_back(match.getWinner()->getName());
+			}
+
+			if (std::find(playersNamesByRound->begin(), playersNamesByRound->end(),
+				match.getLoser()->getName()) == playersNamesByRound->end())
+			{
+				playersNamesByRound->push_back(match.getLoser()->getName());
+			}
+		}
+	}
+	return playersNamesByRound;
+}
+
+string ofTournament::getRound() {
+	return this->round;
+}
+
+void ofTournament::setRound(string round) {
+	this->round = round;
 }

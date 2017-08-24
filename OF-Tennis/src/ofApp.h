@@ -16,6 +16,12 @@ public:
 	// Header
 	ofxUISuperCanvas * view;
 	ofxUIDropDownList * view_list;
+
+	ofxUISuperCanvas * round_sc;
+	ofxUIDropDownList * round_sc_list;
+
+	void roundEvent(ofxUIEventArgs &e);
+
 	void header();
 	void headerEvent(ofxUIEventArgs &e);
 
@@ -50,6 +56,7 @@ public:
 	ofImage * image_header;
 	ofxDatGuiValuePlotter* plotter;
 	std::vector<std::string> * names;
+	std::vector<std::string> * rounds;
 	int x, y, p;
 	vector<string> * nameopp;
 
@@ -58,5 +65,14 @@ public:
 	ofTournament * tr;
 	string name_left;
 	ofMatch * match;
+
+	// Menu 
 	
+	//vector<ofxDatGuiComponent*> menu;
+	//ofxDatGui* gui = new ofxDatGui(100, 100);
+	//ofxDatGuiButton * stats; 
+	ofxDatGuiButton * Final;
+	ofxDatGuiButton * classement;
+
+	ofxDatGui* menu;
 };

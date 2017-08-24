@@ -14,6 +14,7 @@ void ofApp::setup()
 	ofCSVReader csvData("atp2016.csv", ',');
 	processedData = new ofDataProcessing(csvData.getData());
 	names = processedData->getTournamentsNames();
+	
 
 	left = new ofImage();
 	left->load("images/players/empty.png");
@@ -23,7 +24,7 @@ void ofApp::setup()
 	right = new ofImage();
 	right->load("images/players/empty.png");
 	right->resize(212, 148);
-	
+
 	image_header = new ofImage();
 	image_header->load("images/Header.png");
 	image_footer = new ofImage();
@@ -31,11 +32,21 @@ void ofApp::setup()
 
 	header();
 	choiceOfPlayers();
+
+	//this->stats = new ofxDatGuiButton("Matchs stats");
+	//this->stats->setPosition(100, 20);
+
+	//menu = new ofxDatGui(200, 20);
+	//menu->addButton("Final");
+	//menu->setTheme(new ofxDatGuiThemeSmoke());
+	//menu->setWidth(100);
+
+
 }
 
 void ofApp::update()
 {
-	for (int i = 0; i<components.size(); i++) components[i]->draw();
+	for (int i = 0; i < components.size(); i++) components[i]->draw();
 	view->draw();
 	img->draw(475, 125);
 	left->draw(188, 202);
@@ -44,14 +55,17 @@ void ofApp::update()
 
 void ofApp::draw()
 {
-	for (int i = 0; i<components.size(); i++) components[i]->draw();
+	for (int i = 0; i < components.size(); i++) components[i]->draw();
 	view->draw();
 	img->draw(475, 125);
 	left->draw(188, 202);
 	right->draw(616, 202);
 	image_header->draw(0, 10);
 	image_footer->draw(0, 615);
+
 	
+	//this->menu->draw();
+
 }
 
 
@@ -63,26 +77,72 @@ void ofApp::header()
 	view_list->setAutoClose(true);
 	view_list->setAllowMultiple(false);
 	view_list->setShowCurrentSelected(true);
-	view_list->setColorFill(ofxUIColor::black);
 	view->setHeight(48);
-	view->setPosition(400, 60);
+	view->setPosition(188, 60);
 	view->setColorBack(ofxUIColor::darkOliveGreen);
 	view->draw();
 	ofAddListener(view->newGUIEvent, this, &ofApp::headerEvent);
+
+	std::vector<std::string> * rds = new std::vector<std::string>();
+	round_sc = new ofxUISuperCanvas("");
+	round_sc->addSpacer();
+	round_sc_list = round_sc->addDropDownList("Round", *rds);
+	round_sc_list->setAutoClose(true);
+	round_sc_list->setAllowMultiple(false);
+	round_sc_list->setShowCurrentSelected(true);
+	round_sc_list->setColorFill(ofxUIColor::black);
+	round_sc->setHeight(48);
+	round_sc->setPosition(616, 60);
+	round_sc->setColorBack(ofxUIColor::darkOliveGreen);
+	round_sc->draw();
+	//round_sc->draw();
+	ofAddListener(round_sc->newGUIEvent, this, &ofApp::roundEvent);
 }
+
+
 
 void ofApp::headerEvent(ofxUIEventArgs & e)
 {
 	string name = e.getName();
 	if (name.compare("Tournament") == 0) {
 		playersInfosHide();
+		Players_left->setPosition(1000, 1000);
+		Players_right->setPosition(1000, 1000);
 	}
 	else {
 		player_left_list->clearToggles();
 		tr = processedData->getTournament(name);
+		rounds = tr->getRounds();
+
+		round_sc = new ofxUISuperCanvas("");
+		round_sc->addSpacer();
+		round_sc_list = round_sc->addDropDownList("Round", *rounds);
+		round_sc_list->setAutoClose(true);
+		round_sc_list->setAllowMultiple(false);
+		round_sc_list->setShowCurrentSelected(true);
+		round_sc_list->setColorFill(ofxUIColor::black);
+		round_sc->setHeight(48);
+		round_sc->setPosition(616, 60);
+		round_sc->setColorBack(ofxUIColor::darkOliveGreen);
+		round_sc->draw();
+		//round_sc->draw();
+		ofAddListener(round_sc->newGUIEvent, this, &ofApp::roundEvent);
+	}
+}
+
+void ofApp::roundEvent(ofxUIEventArgs & e) {
+	string name = e.getName();
+	if (name.compare("Round") == 0) {
+		playersInfosHide();
+		Players_left->setPosition(1000, 1000);
+		Players_right->setPosition(1000, 1000);
+	}
+	else {
+		tr->setRound(name);
+		delete Players_left;
 		Players_left = new ofxUISuperCanvas("");
 		Players_left->addSpacer();
-		player_left_list = Players_left->addDropDownList("Player 1", *tr->getPlayersNames());
+		player_left_list = Players_left->addDropDownList("Player 1", *tr->getPlayersNamesByRound());
 		player_left_list->setAutoClose(true);
 		player_left_list->setAllowMultiple(false);
 		player_left_list->setShowCurrentSelected(true);
@@ -142,6 +202,7 @@ void ofApp::player_left_Event(ofxUIEventArgs & e)
 		name_left = name;
 		player_right_list->clearToggles();
 		nameopp = tr->getOpponents(name);
+		delete Players_right;
 		Players_right = new ofxUISuperCanvas("");
 		Players_right->addSpacer();
 		player_right_list = Players_right->addDropDownList("Player 2 ", *nameopp);
@@ -162,21 +223,21 @@ void ofApp::player_right_Event(ofxUIEventArgs & e)
 	string name = e.getName();
 	//if (!(name.compare(" "))) {
 
-		if (!(std::find(nameopp->begin(), nameopp->end(), name) == nameopp->end()))
-		{
-			std::cout << name << std::endl;
-			match = tr->getMatch(name_left, name);
-			playersInfos();
-			matchsInfos();
-			left->draw(188, 202);
-			right->draw(616, 202);
-		}
+	if (!(std::find(nameopp->begin(), nameopp->end(), name) == nameopp->end()))
+	{
+		std::cout << name << std::endl;
+		match = tr->getMatch(name_left, name);
+		playersInfos();
+		matchsInfos();
+		left->draw(188, 202);
+		right->draw(616, 202);
+	}
 	//}
 }
 
 void ofApp::playersInfos()
 {
-	string rank_cw = "Rank : " +match->getWinner()->getRank();
+	string rank_cw = "Rank : " + match->getWinner()->getRank();
 	string rank_cl = "Rank : " + match->getLoser()->getRank();
 	int time_i = std::stoi(match->getMinutes());
 	int  hours, minutes;
@@ -196,7 +257,7 @@ void ofApp::playersInfos()
 	string out = "Score :  " + tokens[0] + " | " + tokens[1];
 	if (tokens.size() > 2)  out += " | " + tokens[2];
 
-	components.push_back(getNewComponent(match->getWinner()->getName(), 186, 175,ofColor::sandyBrown, ofColor::black));
+	components.push_back(getNewComponent(match->getWinner()->getName(), 186, 175, ofColor::sandyBrown, ofColor::black));
 	components.push_back(getNewComponent(rank_cw, 186, 351, ofColor::sandyBrown, ofColor::black));
 	components.push_back(getNewComponent(out, 400, 250, ofColor::sandyBrown, ofColor::black));
 	//components.push_back(getNewComponent(match->getBest_of(), 400, 225, ofColor::sandyBrown, ofColor::black));
@@ -205,8 +266,8 @@ void ofApp::playersInfos()
 	if (round.compare("F") == 0) round = "Final";
 	if (round.compare("SF") == 0) round = "Semi-Final";
 	if (round.compare("QF") == 0) round = "Quarter-Final";
-	
-	components.push_back(getNewComponent("Round : "+ round, 400, 275, ofColor::sandyBrown, ofColor::black));
+
+	components.push_back(getNewComponent("Round : " + round, 400, 275, ofColor::sandyBrown, ofColor::black));
 	components.push_back(getNewComponent("Duree du match : " + time.str(), 400, 300, ofColor::sandyBrown, ofColor::black));
 	components.push_back(getNewComponent(match->getLoser()->getName(), 614, 175, ofColor::sandyBrown, ofColor::black));
 	components.push_back(getNewComponent(rank_cl, 614, 351, ofColor::sandyBrown, ofColor::black));
@@ -229,8 +290,8 @@ void ofApp::playersInfosHide()
 void ofApp::matchsInfos()
 {
 	vector<string> stats_winner = getInfoVector(match->getWinner());
-	vector<string> stats_loser  = getInfoVector(match->getLoser());
-	vector<string> stats_names  = { "Aces", "Double Faults", "1st Service", "1st Service Won",
+	vector<string> stats_loser = getInfoVector(match->getLoser());
+	vector<string> stats_names = { "Aces", "Double Faults", "1st Service", "1st Service Won",
 									"2nd Service Won", "Service Games Played", "Break Points Saved",
 									"Break Points Faced", "Total Service Points" };
 	for (size_t i = 0; i < 9; i++)
@@ -245,7 +306,7 @@ void ofApp::matchsInfos()
 
 vector<string> ofApp::getInfoVector(ofPlayer * player)
 {
-	vector<string> data =  vector<string>();
+	vector<string> data = vector<string>();
 	data.push_back(player->getAce());
 	data.push_back(player->getDoubleFaults());
 	data.push_back(player->getFstIn());
