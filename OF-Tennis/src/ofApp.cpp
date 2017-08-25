@@ -6,6 +6,9 @@
 #include <string>
 #include <iostream>
 
+/*ofApp::~ofApp() {
+
+}*/
 
 void ofApp::setup()
 {
@@ -57,7 +60,7 @@ void ofApp::draw()
 {
 	for (int i = 0; i < components.size(); i++) components[i]->draw();
 	view->draw();
-	img->draw(475, 125);
+	img->draw(475, 115);
 	left->draw(188, 202);
 	right->draw(616, 202);
 	image_header->draw(0, 10);
@@ -83,10 +86,10 @@ void ofApp::header()
 	view->draw();
 	ofAddListener(view->newGUIEvent, this, &ofApp::headerEvent);
 
-	std::vector<std::string> * rds = new std::vector<std::string>();
+	vector<string> rds = { " "," " };
 	round_sc = new ofxUISuperCanvas("");
 	round_sc->addSpacer();
-	round_sc_list = round_sc->addDropDownList("Round", *rds);
+	round_sc_list = round_sc->addDropDownList("Round", rds);
 	round_sc_list->setAutoClose(true);
 	round_sc_list->setAllowMultiple(false);
 	round_sc_list->setShowCurrentSelected(true);
@@ -127,6 +130,9 @@ void ofApp::headerEvent(ofxUIEventArgs & e)
 		round_sc->draw();
 		//round_sc->draw();
 		ofAddListener(round_sc->newGUIEvent, this, &ofApp::roundEvent);
+
+		left->draw(1000, 202);
+		right->draw(1000, 202);
 	}
 }
 
@@ -148,7 +154,7 @@ void ofApp::roundEvent(ofxUIEventArgs & e) {
 		player_left_list->setShowCurrentSelected(true);
 		player_left_list->setColorFill(ofxUIColor::black);
 		Players_left->setHeight(48);
-		Players_left->setPosition(188, 125);
+		Players_left->setPosition(188, 115);
 		Players_left->setColorBack(ofxUIColor::darkOliveGreen);
 		Players_left->draw();
 
@@ -167,7 +173,7 @@ void ofApp::choiceOfPlayers()
 	player_left_list->setShowCurrentSelected(true);
 	player_left_list->setColorFill(ofxUIColor::black);
 	Players_left->setHeight(48);
-	Players_left->setPosition(188, 125);
+	Players_left->setPosition(188, 115);
 	Players_left->setColorBack(ofxUIColor::darkOliveGreen);
 	Players_left->draw();
 
@@ -183,7 +189,7 @@ void ofApp::choiceOfPlayers()
 	player_right_list->setAllowMultiple(false);
 	player_right_list->setShowCurrentSelected(true);
 	player_right_list->setColorFill(ofxUIColor::black);
-	Players_right->setPosition(616, 125);
+	Players_right->setPosition(616, 115);
 	Players_right->setHeight(48);
 	Players_right->setColorBack(ofxUIColor::darkOliveGreen);
 	Players_right->draw();
@@ -210,7 +216,7 @@ void ofApp::player_left_Event(ofxUIEventArgs & e)
 		player_right_list->setAllowMultiple(false);
 		player_right_list->setShowCurrentSelected(true);
 		player_right_list->setColorFill(ofxUIColor::black);
-		Players_right->setPosition(616, 125);
+		Players_right->setPosition(616, 115);
 		Players_right->setHeight(48);
 		Players_right->setColorBack(ofxUIColor::darkOliveGreen);
 		Players_right->draw();
@@ -244,7 +250,7 @@ void ofApp::playersInfos()
 	hours = time_i / 60;
 	minutes = time_i % 60;
 	std::ostringstream time;
-	time << hours << "h" << minutes;
+	time << hours << ":" << minutes<< "";
 
 	std::string score = match->getScore();
 	std::string delimiter = " ";
@@ -268,7 +274,7 @@ void ofApp::playersInfos()
 	if (round.compare("QF") == 0) round = "Quarter-Final";
 
 	components.push_back(getNewComponent("Round : " + round, 400, 275, ofColor::sandyBrown, ofColor::black));
-	components.push_back(getNewComponent("Duree du match : " + time.str(), 400, 300, ofColor::sandyBrown, ofColor::black));
+	components.push_back(getNewComponent("Match Time : " + time.str(), 400, 300, ofColor::sandyBrown, ofColor::black));
 	components.push_back(getNewComponent(match->getLoser()->getName(), 614, 175, ofColor::sandyBrown, ofColor::black));
 	components.push_back(getNewComponent(rank_cl, 614, 351, ofColor::sandyBrown, ofColor::black));
 

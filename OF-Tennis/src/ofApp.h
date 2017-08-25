@@ -13,6 +13,8 @@ public:
 	void update();
 	void draw();
 
+	//~ofApp();
+
 	// Header
 	ofxUISuperCanvas * view;
 	ofxUIDropDownList * view_list;
