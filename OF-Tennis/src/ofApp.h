@@ -13,7 +13,7 @@ public:
 	void update();
 	void draw();
 
-	//~ofApp();
+	virtual ~ofApp();
 
 	// Header
 	ofxUISuperCanvas * view;
@@ -40,6 +40,7 @@ public:
 	// Players Infos
 	ofImage * left;
 	ofImage * right;
+	ofImage * win;
 	void playersInfos();
 	void playersInfosHide();
 
@@ -68,13 +69,4 @@ public:
 	string name_left;
 	ofMatch * match;
 
-	// Menu 
-	
-	//vector<ofxDatGuiComponent*> menu;
-	//ofxDatGui* gui = new ofxDatGui(100, 100);
-	//ofxDatGuiButton * stats; 
-	ofxDatGuiButton * Final;
-	ofxDatGuiButton * classement;
-
-	ofxDatGui* menu;
 };

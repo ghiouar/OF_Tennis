@@ -5,10 +5,8 @@
 #include "Model\ofMatch.h"
 #include <string>
 #include <iostream>
+#include <stdlib.h> 
 
-/*ofApp::~ofApp() {
-
-}*/
 
 void ofApp::setup()
 {
@@ -28,6 +26,12 @@ void ofApp::setup()
 	right->load("images/players/empty.png");
 	right->resize(212, 148);
 
+	win = new ofImage();
+	win->load("images/players/empty.png");
+	win->resize(1, 1);
+	
+	
+
 	image_header = new ofImage();
 	image_header->load("images/Header.png");
 	image_footer = new ofImage();
@@ -35,16 +39,6 @@ void ofApp::setup()
 
 	header();
 	choiceOfPlayers();
-
-	//this->stats = new ofxDatGuiButton("Matchs stats");
-	//this->stats->setPosition(100, 20);
-
-	//menu = new ofxDatGui(200, 20);
-	//menu->addButton("Final");
-	//menu->setTheme(new ofxDatGuiThemeSmoke());
-	//menu->setWidth(100);
-
-
 }
 
 void ofApp::update()
@@ -63,12 +57,9 @@ void ofApp::draw()
 	img->draw(475, 115);
 	left->draw(188, 202);
 	right->draw(616, 202);
+	win->draw(360, 202);
 	image_header->draw(0, 10);
 	image_footer->draw(0, 615);
-
-	
-	//this->menu->draw();
-
 }
 
 
@@ -98,8 +89,9 @@ void ofApp::header()
 	round_sc->setPosition(616, 60);
 	round_sc->setColorBack(ofxUIColor::darkOliveGreen);
 	round_sc->draw();
-	//round_sc->draw();
 	ofAddListener(round_sc->newGUIEvent, this, &ofApp::roundEvent);
+
+
 }
 
 
@@ -113,10 +105,9 @@ void ofApp::headerEvent(ofxUIEventArgs & e)
 		Players_right->setPosition(1000, 1000);
 	}
 	else {
-		player_left_list->clearToggles();
+		round_sc_list->clearToggles();
 		tr = processedData->getTournament(name);
 		rounds = tr->getRounds();
-
 		round_sc = new ofxUISuperCanvas("");
 		round_sc->addSpacer();
 		round_sc_list = round_sc->addDropDownList("Round", *rounds);
@@ -128,11 +119,11 @@ void ofApp::headerEvent(ofxUIEventArgs & e)
 		round_sc->setPosition(616, 60);
 		round_sc->setColorBack(ofxUIColor::darkOliveGreen);
 		round_sc->draw();
-		//round_sc->draw();
 		ofAddListener(round_sc->newGUIEvent, this, &ofApp::roundEvent);
 
 		left->draw(1000, 202);
 		right->draw(1000, 202);
+
 	}
 }
 
@@ -203,6 +194,7 @@ void ofApp::player_left_Event(ofxUIEventArgs & e)
 	string name = e.getName();
 	if (name.compare("Player 1") == 0) {
 		playersInfosHide();
+		win->resize(1, 1);
 	}
 	else {
 		name_left = name;
@@ -266,7 +258,8 @@ void ofApp::playersInfos()
 	components.push_back(getNewComponent(match->getWinner()->getName(), 186, 175, ofColor::sandyBrown, ofColor::black));
 	components.push_back(getNewComponent(rank_cw, 186, 351, ofColor::sandyBrown, ofColor::black));
 	components.push_back(getNewComponent(out, 400, 250, ofColor::sandyBrown, ofColor::black));
-	//components.push_back(getNewComponent(match->getBest_of(), 400, 225, ofColor::sandyBrown, ofColor::black));
+	
+	//components.push_back(getNewComponent(" Winner ", 400, 225, ofColor::greenYellow, ofColor::black));
 	string round = match->getRound();
 	std::cout << round << std::endl;
 	if (round.compare("F") == 0) round = "Final";
@@ -282,15 +275,19 @@ void ofApp::playersInfos()
 	right = addNewImage(match->getLoser()->getName());
 	left->draw(188, 202);
 	right->draw(616, 202);
+
+	win->load("images/win.png");
+	win->resize(40, 40);
 }
+
 
 void ofApp::playersInfosHide()
 {
 	for (int i = 0; i < components.size(); i++) components[i]->setPosition(1002, 800);
 	right->load("images/players/empty.png");
-	right->resize(212, 148);
+	right->resize(1, 1);
 	left->load("images/players/empty.png");
-	left->resize(212, 148);
+	left->resize(1, 1);
 }
 
 void ofApp::matchsInfos()
@@ -348,6 +345,28 @@ ofImage * ofApp::addNewImage(string name)
 	}
 	image_tmp->resize(212, 148);
 	return image_tmp;
+}
+
+
+ofApp::~ofApp() {
+	if (view != NULL) delete view;
+	if (round_sc != NULL)delete round_sc;
+	if (Players_left != NULL)delete Players_left;
+	if (image_vs != NULL)delete image_vs;
+	if (Players_right != NULL)delete Players_right;
+	if (left != NULL)delete left;
+	if (right != NULL)delete right;
+	if (component != NULL)delete component;
+	if (font != NULL)delete font;
+	if (img != NULL)delete img;
+	if (image_footer != NULL)delete image_footer;
+	if (image_header != NULL)delete image_header;
+	if (plotter != NULL)delete plotter;
+	if (names != NULL)delete names;
+	if (rounds != NULL)delete rounds;
+	if (nameopp != NULL)delete nameopp;
+	if (processedData != NULL)delete processedData;
+	//std::exit(0);
 }
 
 
