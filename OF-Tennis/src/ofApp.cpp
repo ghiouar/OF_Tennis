@@ -103,6 +103,7 @@ void ofApp::headerEvent(ofxUIEventArgs & e)
 		playersInfosHide();
 		Players_left->setPosition(1000, 1000);
 		Players_right->setPosition(1000, 1000);
+		win->resize(1, 1);
 	}
 	else {
 		round_sc_list->clearToggles();
@@ -133,6 +134,7 @@ void ofApp::roundEvent(ofxUIEventArgs & e) {
 		playersInfosHide();
 		Players_left->setPosition(1000, 1000);
 		Players_right->setPosition(1000, 1000);
+		win->resize(1, 1);
 	}
 	else {
 		tr->setRound(name);
